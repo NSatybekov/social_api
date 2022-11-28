@@ -1,0 +1,255 @@
+openapi: "3.0.0"
+info: 
+  version: "1.0.0"
+  title: "Social network API"
+host: localhost:3000
+basePath: /
+schemes: 
+  - http
+consumes: 
+  - application/json
+produces: 
+  - application/json
+components: 
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /registration: 
+    post:
+      summary: Sign up user
+      requestBody:
+        description: to create user
+        required: true
+        content: 
+          application/json:
+            schema: 
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: test8
+                password:
+                  type: string
+                  example: 1
+      responses:
+        200:
+          description: New user object 
+          schema:
+            type: object
+            properties:
+              token: 
+                type: object
+                example: something big and random
+              user: 
+                type: object
+        405:
+          desciprtion: This user ID already registered
+  /login: 
+    post: 
+      summary: Sign in user
+      requestBody:
+        description: to login to system
+        required: true
+        content: 
+          application/json:
+            schema: 
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Users token and user object to display info about friends etc 
+          schema:
+            type: object
+            properties:
+              token: 
+                type: object
+                example: something big and random
+              user: 
+                type: object,
+                example: you will get users name friends and all other info
+        403:
+          desciprtion: User credentials not correct
+  /users: 
+    get: 
+      summary: get all users list
+      responses:
+        200:
+          description: Returning all users list
+          schema:
+            type: object
+            properties:
+              users: 
+                type: array,
+                example: you will get users name friends and all other info
+  /users/{id}: 
+    get: 
+      summary: get info anout concrete user
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: User id to find concrete user
+          example: 63771b3752b8231adf5bd2f0
+      responses:
+        200:
+          description: Returning user info about concrete user
+          schema:
+            type: object
+            properties:
+              user: 
+                type: object,
+                example: you will get users name friends and all other info
+        404: 
+          description: There are no user with this id
+    put: 
+      summary: method to update users info
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: Method to update users profile description in JSON format, method works only with user who is profile owner
+          example: '63771b3752b8231adf5bd2f0'
+      requestBody:
+          description: to create user
+          required: true
+          content: 
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  description:
+                    type: string
+      responses:
+        200:
+          description: Returning updated user object
+          schema:
+            type: object
+            properties:
+              user: 
+                type: object,
+                example: you will get users name friends and new description
+        404: 
+          description: There are no user with this id
+        401: 
+          description: You are not profile owner
+  /users/{id}/friend: 
+    get: 
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: Enter user ID to get this users friend list
+          example: 637240069f8a61d71465943a
+      responses:
+        200:
+          description: Returning users friend list
+          schema:
+            type: object
+            properties:
+              user: 
+                type: object,
+                example: you will get users friends
+        404: 
+          description: There are no user with this id
+  /users/{id}/friend/{friendId}: 
+    post: 
+      summary: method to send friend request from one user to another/ you need send this users token as well
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: Enter user ID of user who want to send request
+          example: 63771b3752b8231adf5bd2f0
+        - in: path
+          name: friendId
+          required: true
+          type: string
+          description: Enter user ID of friend request receivers
+          example: 637240069f8a61d71465943a
+      responses:
+        200:
+          description: Returning new request sender object with sent request
+          schema:
+            type: object
+            properties:
+              user: 
+                type: object,
+                example: you will get users object
+        401: 
+          description: Error when this users ID already in your friend list (i didnt care about codes)
+        402: 
+          description: Error when you dont have request with such ID
+    put: 
+      summary: method to accept friend request from another user
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: Enter user ID of user who want accept request (he needs to be logged in)
+          example: 637240069f8a61d71465943a
+        - in: path
+          name: friendId
+          required: true
+          type: string
+          description: Enter user ID of whom request user want to accept
+          example: 63771b3752b8231adf5bd2f0
+      responses:
+        200:
+          description: Returning new requester object (i can make them like)
+          schema:
+            type: object
+            properties:
+              user: 
+                type: object,
+                example: you will get users object
+        401: 
+          description: Error when this users ID already in your friend list (i didnt care about codes)
+        402: 
+          description: Error when you dont have request with such ID
+    delete: 
+      summary: method to delete user from friends list
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: Enter user ID of user who want to delete friend
+          example: 637240069f8a61d71465943a
+        - in: path
+          name: friendId
+          required: true
+          type: string
+          description: Enter user ID whos ID user want to delete from friends list
+          example: 63771b3752b8231adf5bd2f0
+      responses:
+        200:
+          description: Returning new requester object (i can make them like)
+          schema:
+            type: object
+            properties:
+              user: 
+                type: object,
+                example: you will get users object
+        403: 
+          description: Error when this users ID already in your friend list (i didnt care about codes)
+
+
+                            
+
+
+            
+      

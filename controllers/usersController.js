@@ -8,17 +8,15 @@ exports.all_users_get = (req,res, next) => {
     User.find({}, (err, users) => {
         if(err) {return next(err)}
         res.json(users)
-    })
+    }) 
 }
 
-exports.user_info_get = async function (req,res, next) { // need to remake it after creating likes etc (checking is this user profile owner)
+exports.user_info_get = async function (req,res, next) { // need to remake it after creating likes etc (checking is this user profile owner)~
     try{
         const user = await User.findById(req.params.id)
-
-        
         res.json(user)
     } 
-    catch(err) {return next(err)}
+    catch(err) {return res.json('No user')}
 }
 
 // сделать мой профиль другим эндпоинтом 
@@ -35,7 +33,7 @@ exports.user_info_update = async (req,res,next) => {
         updatedUser = await User.findById(req.params.id) // need to make request again to fetch data in other case it will return old data
         res.json(updatedUser) // more info in mongoose doc https://mongoosejs.com/docs/tutorials/findoneandupdate.html
     } 
-    catch(err) {return next(err)}
+    catch(err) {return res.json('Some error'), next(err)}
 
 }
 
@@ -62,7 +60,7 @@ exports.user_friend_request_send = async (req,res, next) => { // getting data ab
 
 // need to check if user that request sent in database and have you got him in friend list
 try {
-    if( sentStatus === false) {
+    if( sentStatus === false) { // also need to check if you have this received request
         const sendedFriendRequest = {
             $push : {sent_friend_requests: req.params.friendId}
         }
@@ -103,10 +101,10 @@ exports.user_friend_invite_accept = async (req,res, next) => {
             updatedReceiver = await User.findById(req.params.id)
             res.json(updatedReceiver)
         }  if(inFriendsListCheck === true) {
-            res.send('This user is in your friends list already')
+            res.send('This user is in your friends list already').status(401)
         } 
         else{
-            res.send('No such friend request')
+            res.send('No such friend request').status(402)
         }
     } 
     catch {

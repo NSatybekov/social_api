@@ -22,7 +22,7 @@ exports.verifyToken = async (req,res, next) => {
         next()
     }
     catch {
-        res.sendStatus(403)
+        res.status(403)
     }
 }
 
@@ -41,7 +41,7 @@ async function getAuthData(req,res,next) {
 exports.profileOwner = (req,res, next) => {
 
     jwt.verify(req.token, process.env.SECRET_KEY, (err, userData) => { // userData is data that we got from 
-        if(err) {return next(err)}
+        if(err) {return res.send('some error occured'),next(err)}
         checkIdOwner(req.params.id, userData.userAuth.user._id, res, next)
     })  // IT WILL ONLY WORK ONLY WITH USERS ROUTER - NEED TO WORK IN ANOTHER FORMAT 
     // in case with posts need to get data from authorID field - and this method will not work
@@ -61,7 +61,7 @@ function checkIdOwner (idFromParam, idFromToken, res, next) {
     }
     else {
         res.status(401)
-         res.send('You are not owner of this')
+         res.send('You are not owner of profile')
     }
 }
 

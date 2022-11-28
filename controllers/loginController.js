@@ -8,6 +8,7 @@ exports.index = (req,res) => {
 }
 
 exports.registration_post = (req,res, next) => {
+    console.log(req.body)
     const saltHash = hashPassword(req.body.password)
         User.findOne({username: req.body.username})
             .exec((err, found_user) => {
@@ -32,6 +33,9 @@ exports.registration_post = (req,res, next) => {
                                 })
                             })
                         })
+                        .catch((err) => {
+                            res.sendStatus(40189)
+                        })
                 }             
             })
 }
@@ -48,10 +52,6 @@ exports.login_post =  async function (req,res)  {
         } else {
             res.status(userAuth.status).send(userAuth.message)
         }
-}
-
-exports.logout_post = (req,res) => {
-        res.send('Logout will be later')
 }
 
 
